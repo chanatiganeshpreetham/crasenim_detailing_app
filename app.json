@@ -4,23 +4,36 @@
     "slug": "crasenim-pharma",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/crasenim-app-icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "targetSdkVersion": 36
+          }
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "package": "com.crasenimpharma.mobile",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/crasenim-adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/crasenim-app-icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e8b9c89f-7d88-4975-b1c4-8e405a8fb2fc"
+      }
     }
   }
 }

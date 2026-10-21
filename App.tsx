@@ -176,7 +176,7 @@ export default function App() {
               pressed && styles.detailButtonPressed,
             ]}
           >
-            <Text style={styles.loginButtonLabel}>Login</Text>
+            <Text style={styles.loginButtonLabel}>Open Catalogue</Text>
           </Pressable>
         </View>
       ) : isDetailing && currentProduct ? (
