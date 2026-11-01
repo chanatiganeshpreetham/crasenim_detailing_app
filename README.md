@@ -152,6 +152,10 @@ catalogue names (for example, "Amoxenim"/"Amoxesenim" to "Amoxsenim").
 
 ## Google Play release status
 
+For the full, repeatable Expo/EAS build, AAB upload, testing, troubleshooting,
+and production publishing walkthrough, see
+[PLAY_STORE_RELEASE_GUIDE.md](./PLAY_STORE_RELEASE_GUIDE.md).
+
 The lack of authentication is intentional for this public catalogue app. It is
 not by itself a Play Store blocker; the app still needs release testing and
 policy/store setup:

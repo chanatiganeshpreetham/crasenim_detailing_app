@@ -21,6 +21,7 @@
     },
     "android": {
       "package": "com.crasenimpharma.mobile",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/crasenim-adaptive-icon.png"
