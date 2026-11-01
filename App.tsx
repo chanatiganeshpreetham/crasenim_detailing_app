@@ -24,6 +24,8 @@ export default function App() {
   const [hasEnteredApp, setHasEnteredApp] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDetailing, setIsDetailing] = useState(false);
+  const [areDetailControlsVisible, setAreDetailControlsVisible] =
+    useState(true);
   const [slideIndex, setSlideIndex] = useState(0);
 
   const selectedSpecialty =
@@ -44,6 +46,7 @@ export default function App() {
 
   function openDetailing() {
     if (slideCount > 0) {
+      setAreDetailControlsVisible(true);
       setIsDetailing(true);
     }
   }
@@ -59,6 +62,18 @@ export default function App() {
   function showNextSlide() {
     setSlideIndex((index) => (index + 1) % slideCount);
   }
+
+  useEffect(() => {
+    if (!isDetailing || !areDetailControlsVisible) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setAreDetailControlsVisible(false);
+    }, 3500);
+
+    return () => clearTimeout(timeout);
+  }, [areDetailControlsVisible, isDetailing, slideIndex]);
 
   useEffect(() => {
     if (!isDetailing && !isMenuOpen) {
@@ -158,27 +173,29 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style={isDetailing ? 'light' : 'dark'} />
+    <View style={styles.root}>
+      <StatusBar hidden={isDetailing} style={isDetailing ? 'light' : 'dark'} />
       {!hasEnteredApp ? (
-        <View style={styles.welcomeScreen}>
-          <Image
-            accessibilityLabel="Crasenim Pharma"
-            resizeMode="contain"
-            source={require('./assets/crasenim-logo.jpeg')}
-            style={styles.welcomeLogo}
-          />
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setHasEnteredApp(true)}
-            style={({ pressed }) => [
-              styles.loginButton,
-              pressed && styles.detailButtonPressed,
-            ]}
-          >
-            <Text style={styles.loginButtonLabel}>Open Catalogue</Text>
-          </Pressable>
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.welcomeScreen}>
+            <Image
+              accessibilityLabel="Crasenim Pharma"
+              resizeMode="contain"
+              source={require('./assets/crasenim-logo.jpeg')}
+              style={styles.welcomeLogo}
+            />
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setHasEnteredApp(true)}
+              style={({ pressed }) => [
+                styles.loginButton,
+                pressed && styles.detailButtonPressed,
+              ]}
+            >
+              <Text style={styles.loginButtonLabel}>Open Catalogue</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
       ) : isDetailing && currentProduct ? (
         <View style={styles.detailingScreen}>
           <View style={styles.detailImageArea} {...swipeHandlers.panHandlers}>
@@ -188,156 +205,178 @@ export default function App() {
               source={currentProduct.image}
               style={styles.detailProductImage}
             />
-          </View>
-          <Pressable
-            accessibilityLabel="Close detailing"
-            accessibilityRole="button"
-            onPress={closeDetailing}
-            style={({ pressed }) => [
-              styles.detailCloseButton,
-              pressed && styles.detailButtonPressed,
-            ]}
-          >
-            <Text style={styles.detailCloseLabel}>×</Text>
-            <Text style={styles.detailCloseText}>Close</Text>
-          </Pressable>
-          <View style={styles.detailFooter}>
-            <Pressable
-              accessibilityLabel="Previous product"
-              accessibilityRole="button"
-              onPress={showPreviousSlide}
-              style={({ pressed }) => [
-                styles.detailArrowButton,
-                pressed && styles.detailButtonPressed,
-              ]}
-            >
-              <Text style={styles.detailArrowLabel}>‹</Text>
-            </Pressable>
-            <View style={styles.detailInformation}>
-              <Text numberOfLines={1} style={styles.detailProductName}>
-                {currentProduct.name}
-              </Text>
-              <Text style={styles.detailSlideCount}>
-                {slideIndex + 1} / {slideCount}
-              </Text>
-            </View>
-            <Pressable
-              accessibilityLabel="Next product"
-              accessibilityRole="button"
-              onPress={showNextSlide}
-              style={({ pressed }) => [
-                styles.detailArrowButton,
-                pressed && styles.detailButtonPressed,
-              ]}
-            >
-              <Text style={styles.detailArrowLabel}>›</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : (
-        <View style={styles.app}>
-          {!isCompact ? renderSpecialtyMenu() : null}
-
-          <View style={styles.main}>
-            <View style={styles.topBar}>
-              {isCompact ? (
-                <Pressable
-                  accessibilityLabel="Open doctor specialties"
-                  accessibilityRole="button"
-                  onPress={() => setIsMenuOpen(true)}
-                  style={styles.menuButton}
-                >
-                  <Text style={styles.menuButtonText}>☰</Text>
-                </Pressable>
-              ) : null}
-              <View style={styles.topBarCopy}>
-                <Text style={styles.topBarEyebrow}>CRASENIM PHARMA</Text>
-                <Text style={styles.topBarTitle}>Product catalogue</Text>
-              </View>
-              {isCompact ? (
-                <View style={styles.mobileSpecialtyPill}>
-                  <Text numberOfLines={1} style={styles.mobileSpecialtyText}>
-                    {selectedSpecialty.shortName}
-                  </Text>
-                </View>
-              ) : null}
+            {!areDetailControlsVisible ? (
               <Pressable
+                accessibilityLabel="Show detailing controls"
                 accessibilityRole="button"
-                accessibilityState={{ disabled: slideCount === 0 }}
-                disabled={slideCount === 0}
-                onPress={openDetailing}
+                onPress={() => setAreDetailControlsVisible(true)}
+                style={StyleSheet.absoluteFill}
+              />
+            ) : null}
+          </View>
+          {areDetailControlsVisible ? (
+            <>
+              <Pressable
+                accessibilityLabel="Close detailing"
+                accessibilityRole="button"
+                onPress={closeDetailing}
                 style={({ pressed }) => [
-                  styles.detailingButton,
-                  slideCount === 0 && styles.detailingButtonDisabled,
+                  styles.detailCloseButton,
                   pressed && styles.detailButtonPressed,
                 ]}
               >
-                <Text style={styles.detailingButtonLabel}>Detailing</Text>
+                <Text style={styles.detailCloseLabel}>×</Text>
+                <Text style={styles.detailCloseText}>Close</Text>
               </Pressable>
-            </View>
+              <View style={styles.detailFooter}>
+                <Pressable
+                  accessibilityLabel="Previous product"
+                  accessibilityRole="button"
+                  onPress={showPreviousSlide}
+                  style={({ pressed }) => [
+                    styles.detailArrowButton,
+                    pressed && styles.detailButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.detailArrowLabel}>‹</Text>
+                </Pressable>
+                <View style={styles.detailInformation}>
+                  <Text numberOfLines={1} style={styles.detailProductName}>
+                    {currentProduct.name}
+                  </Text>
+                  <Text style={styles.detailSlideCount}>
+                    {slideIndex + 1} / {slideCount}
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityLabel="Next product"
+                  accessibilityRole="button"
+                  onPress={showNextSlide}
+                  style={({ pressed }) => [
+                    styles.detailArrowButton,
+                    pressed && styles.detailButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.detailArrowLabel}>›</Text>
+                </Pressable>
+              </View>
+            </>
+          ) : null}
+        </View>
+      ) : (
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.app}>
+            {!isCompact ? renderSpecialtyMenu() : null}
 
-            <View style={styles.catalog}>
-              <View style={styles.catalogHeading}>
-                <Text style={styles.specialtyTitle}>
-                  {selectedSpecialty.name}
-                </Text>
-                <Text style={styles.catalogHint}>
-                  {slideCount} product slides available
-                </Text>
+            <View style={styles.main}>
+              <View style={styles.topBar}>
+                {isCompact ? (
+                  <Pressable
+                    accessibilityLabel="Open doctor specialties"
+                    accessibilityRole="button"
+                    onPress={() => setIsMenuOpen(true)}
+                    style={styles.menuButton}
+                  >
+                    <Text style={styles.menuButtonText}>☰</Text>
+                  </Pressable>
+                ) : null}
+                <View style={styles.topBarCopy}>
+                  <Text style={styles.topBarEyebrow}>CRASENIM PHARMA</Text>
+                  <Text style={styles.topBarTitle}>Product catalogue</Text>
+                </View>
+                {isCompact ? (
+                  <View style={styles.mobileSpecialtyPill}>
+                    <Text numberOfLines={1} style={styles.mobileSpecialtyText}>
+                      {selectedSpecialty.shortName}
+                    </Text>
+                  </View>
+                ) : null}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: slideCount === 0 }}
+                  disabled={slideCount === 0}
+                  onPress={openDetailing}
+                  style={({ pressed }) => [
+                    styles.detailingButton,
+                    slideCount === 0 && styles.detailingButtonDisabled,
+                    pressed && styles.detailButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.detailingButtonLabel}>Detailing</Text>
+                </Pressable>
               </View>
 
-              {slideCount > 0 ? (
-                <View style={styles.readyCard}>
-                  <View style={styles.readyIcon}>
-                    <Text style={styles.readyIconLabel}>Rx</Text>
-                  </View>
-                  <Text style={styles.readyTitle}>Ready to start detailing?</Text>
-                  <Text style={styles.readyDescription}>
-                    Open the full-screen presentation to show product slides
-                    for {selectedSpecialty.shortName}.
+              <View style={styles.catalog}>
+                <View style={styles.catalogHeading}>
+                  <Text style={styles.specialtyTitle}>
+                    {selectedSpecialty.name}
                   </Text>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={openDetailing}
-                    style={({ pressed }) => [
-                      styles.readyButton,
-                      pressed && styles.detailButtonPressed,
-                    ]}
-                  >
-                    <Text style={styles.readyButtonLabel}>
-                      Start detailing
+                  <Text style={styles.catalogHint}>
+                    {slideCount} product slides available
+                  </Text>
+                </View>
+
+                {slideCount > 0 ? (
+                  <View style={styles.readyCard}>
+                    <View style={styles.readyIcon}>
+                      <Text style={styles.readyIconLabel}>Rx</Text>
+                    </View>
+                    <Text style={styles.readyTitle}>
+                      Ready to start detailing?
                     </Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <View style={styles.emptyState}>
-                  <Text style={styles.emptyTitle}>No products assigned yet</Text>
-                  <Text style={styles.emptyDescription}>
-                    Add product IDs for this specialty in the catalogue
-                    configuration.
-                  </Text>
-                </View>
-              )}
+                    <Text style={styles.readyDescription}>
+                      Open the full-screen presentation to show product slides
+                      for {selectedSpecialty.shortName}.
+                    </Text>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={openDetailing}
+                      style={({ pressed }) => [
+                        styles.readyButton,
+                        pressed && styles.detailButtonPressed,
+                      ]}
+                    >
+                      <Text style={styles.readyButtonLabel}>
+                        Start detailing
+                      </Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyTitle}>
+                      No products assigned yet
+                    </Text>
+                    <Text style={styles.emptyDescription}>
+                      Add product IDs for this specialty in the catalogue
+                      configuration.
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      )}
 
-      {!isDetailing && isCompact && isMenuOpen ? (
-        <View style={styles.drawerLayer}>
-          <Pressable
-            accessibilityLabel="Close specialties menu"
-            onPress={() => setIsMenuOpen(false)}
-            style={styles.drawerScrim}
-          />
-          <View style={styles.drawer}>{renderSpecialtyMenu(true)}</View>
-        </View>
-      ) : null}
-    </SafeAreaView>
+          {!isDetailing && isCompact && isMenuOpen ? (
+            <View style={styles.drawerLayer}>
+              <Pressable
+                accessibilityLabel="Close specialties menu"
+                onPress={() => setIsMenuOpen(false)}
+                style={styles.drawerScrim}
+              />
+              <View style={styles.drawer}>{renderSpecialtyMenu(true)}</View>
+            </View>
+          ) : null}
+        </SafeAreaView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    backgroundColor: '#F4F7FB',
+    flex: 1,
+  },
   safeArea: {
     backgroundColor: '#F4F7FB',
     flex: 1,
@@ -370,17 +409,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   detailingScreen: {
-    backgroundColor: '#111827',
+    backgroundColor: '#05080F',
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
   },
   detailImageArea: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    width: '100%',
+    bottom: 0,
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   detailProductImage: {
     height: '100%',
@@ -397,8 +435,9 @@ const styles = StyleSheet.create({
     minHeight: 42,
     paddingHorizontal: 14,
     position: 'absolute',
-    right: 22,
-    top: 18,
+    right: 16,
+    top: 16,
+    zIndex: 1,
   },
   detailCloseLabel: {
     color: '#FFFFFF',
@@ -420,12 +459,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
     justifyContent: 'space-between',
-    marginTop: 8,
     maxWidth: 360,
     minHeight: 56,
     paddingHorizontal: 8,
     paddingVertical: 6,
+    position: 'absolute',
+    bottom: 16,
     width: '100%',
+    zIndex: 1,
   },
   detailArrowButton: {
     alignItems: 'center',

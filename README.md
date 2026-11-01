@@ -13,13 +13,18 @@ a browser preview for quick UI checks.
 3. Select a doctor specialty from the left sidebar on wider screens or the
    menu on compact screens.
 4. Select **Detailing** (or **Start detailing**) to open that specialty's
-   slides in full-screen mode.
+   slides in immersive full-screen mode. The slide is fitted to the screen
+   without cropping, so all product information remains visible.
 5. Swipe left or right, or use the previous/next buttons, to move between
-   slides. Use **Close** or Android's back button to return to the catalogue.
+   slides. The controls overlay the slide and hide automatically while
+   presenting; tap the slide to show them again. Use **Close** or Android's
+   back button to return to the catalogue.
 
 The native app is configured for landscape orientation in `app.json`. A browser
 preview is useful for layout checks but does not enforce Android orientation or
-reproduce all native behavior.
+reproduce all native behavior. Slides are scaled to fit without cropping. A
+dark letterbox may remain on screens with a different aspect ratio, since
+cropping or stretching could hide or distort product information.
 
 ## Requirements
 
